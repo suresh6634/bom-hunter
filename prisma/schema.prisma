@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ConversionStatus {
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  conversionLogs ConversionLog[]
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  uomMappings    UnitOfMeasureMapping[]
+  conversionLogs ConversionLog[]
+}
+
+model UnitOfMeasureMapping {
+  id               String   @id @default(cuid())
+  customerId       String
+  customerUOM      String
+  peckoUOM         String
+  conversionFactor Float    @default(1)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, customerUOM])
+}
+
+model ConversionLog {
+  id                String           @id @default(cuid())
+  userId            String
+  customerId        String
+  originalFilename  String
+  status            ConversionStatus
+  productsConverted Int              @default(0)
+  bomsConverted     Int              @default(0)
+  createdAt         DateTime         @default(now())
+
+  user     User     @relation(fields: [userId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+}

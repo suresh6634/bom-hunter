@@ -1,0 +1,13 @@
+{
+  "name": "pecko-bom-converter",
+  "private": true,
+  "workspaces": ["server", "client"],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=server\" \"npm run dev --workspace=client\"",
+    "migrate": "npx prisma migrate dev --schema=prisma/schema.prisma",
+    "seed": "node prisma/seed.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
