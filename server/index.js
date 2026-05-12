@@ -5,8 +5,13 @@ import { logger } from './lib/logger.js'
 
 const app = express()
 
+const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173'
+if (allowedOrigin === '*') {
+  throw new Error('CLIENT_URL must be a specific origin, not a wildcard')
+}
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: allowedOrigin,
   credentials: true,
 }))
 app.use(express.json())

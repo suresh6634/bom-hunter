@@ -56,14 +56,14 @@ model UnitOfMeasureMapping {
 
 model ConversionLog {
   id                String           @id @default(cuid())
-  userId            String
-  customerId        String
+  userId            String?
+  customerId        String?
   originalFilename  String
   status            ConversionStatus
   productsConverted Int              @default(0)
   bomsConverted     Int              @default(0)
   createdAt         DateTime         @default(now())
 
-  user     User     @relation(fields: [userId], references: [id])
-  customer Customer @relation(fields: [customerId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 }
