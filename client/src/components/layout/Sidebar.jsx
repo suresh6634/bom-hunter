@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, RefreshCw, Settings, Users, Building2, Ruler, SlidersHorizontal, LogOut, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -11,12 +11,16 @@ const inactiveClass = 'text-slate-400 hover:bg-navy-700 hover:text-slate-100'
 export default function Sidebar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const [settingsOpen, setSettingsOpen] = useState(false)
+  const { pathname } = useLocation()
+  const [settingsOpen, setSettingsOpen] = useState(() => pathname.startsWith('/settings'))
   const isAdmin = user?.role === 'ADMIN'
 
   async function handleLogout() {
-    await logout()
-    navigate('/login')
+    try {
+      await logout()
+    } finally {
+      navigate('/login')
+    }
   }
 
   return (

@@ -22,7 +22,7 @@ export default function App() {
   useEffect(() => {
     api.get('/setup/status')
       .then(r => setSetupRequired(r.data.setupRequired))
-      .catch(() => {})
+      .catch(() => setSetupRequired(true)) // fail-safe: treat unreachable server as setup-required
       .finally(() => setSetupChecked(true))
   }, [])
 
