@@ -2,6 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { logger } from './lib/logger.js'
+import authRouter from './routes/auth.js'
+import setupRouter from './routes/setup.js'
 
 const app = express()
 
@@ -10,14 +12,13 @@ if (allowedOrigin === '*') {
   throw new Error('CLIENT_URL must be a specific origin, not a wildcard')
 }
 
-app.use(cors({
-  origin: allowedOrigin,
-  credentials: true,
-}))
+app.use(cors({ origin: allowedOrigin, credentials: true }))
 app.use(express.json())
 app.use(cookieParser())
 
-// Routes will be mounted here in subsequent tasks
+app.use('/api/setup', setupRouter)
+app.use('/api/auth', authRouter)
+
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }))
 
 app.use((err, req, res, next) => {
