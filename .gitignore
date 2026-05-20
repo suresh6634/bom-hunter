@@ -1,6 +1,6 @@
 node_modules/
 .env
-dist/
+# dist/ is intentionally NOT ignored — client/dist is committed for Railway deployment
 .DS_Store
 *.log
 
