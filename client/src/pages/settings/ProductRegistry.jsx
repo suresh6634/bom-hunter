@@ -40,22 +40,25 @@ export default function ProductRegistry() {
 
   // Load items whenever debouncedSearch, page, or refreshKey changes
   useEffect(() => {
+    const controller = new AbortController()
     async function load() {
       setLoading(true)
       try {
         const r = await api.get('/product-registry', {
           params: { search: debouncedSearch, page, limit: LIMIT },
+          signal: controller.signal,
         })
         setItems(r.data.items)
         setTotal(r.data.total)
         setTotalPages(r.data.totalPages)
-      } catch {
-        showToast('Failed to load registry')
+      } catch (err) {
+        if (err.name !== 'CanceledError') showToast('Failed to load registry')
       } finally {
         setLoading(false)
       }
     }
     load()
+    return () => controller.abort()
   }, [debouncedSearch, page, refreshKey])
 
   async function onSubmit(data) {
@@ -76,8 +79,12 @@ export default function ProductRegistry() {
     try {
       await api.delete(`/product-registry/${id}`)
       showToast('Product removed')
-      setItems(prev => prev.filter(x => x.id !== id))
-      setTotal(t => t - 1)
+      // If we just deleted the last item on this page, go back one page
+      if (items.length === 1 && page > 1) {
+        setPage(p => p - 1)
+      } else {
+        setRefreshKey(k => k + 1)
+      }
     } catch (err) {
       showToast(err.response?.data?.error || 'Delete failed')
     }
