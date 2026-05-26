@@ -1,6 +1,6 @@
 import xlsx from 'xlsx'
 
-export function generateProductImport(parent, children) {
+export function generateProductImport(parent, children, skipParent = false) {
   const headers = [
     'External ID',
     'Name',
@@ -31,7 +31,10 @@ export function generateProductImport(parent, children) {
     ]
   }
 
-  const data = [headers, toRow(parent), ...children.map(toRow)]
+  const productRows = []
+  if (!skipParent) productRows.push(toRow(parent))
+  productRows.push(...children.map(toRow))
+  const data = [headers, ...productRows]
 
   const ws = xlsx.utils.aoa_to_sheet(data)
   const wb = xlsx.utils.book_new()
