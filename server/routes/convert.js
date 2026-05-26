@@ -79,8 +79,14 @@ router.post('/', upload.single('file'), async (req, res, next) => {
 
     // Auto-register all products discovered in this BOM (fire and forget)
     const allItems = [mappedParent, ...mappedChildren]
+    const seen = new Set()
+    const uniqueItems = allItems.filter(item => {
+      if (seen.has(item.itemId)) return false
+      seen.add(item.itemId)
+      return true
+    })
     prisma.$transaction(
-      allItems.map(item =>
+      uniqueItems.map(item =>
         prisma.productRegistry.upsert({
           where: { itemId: item.itemId },
           update: { itemName: item.itemName || null, uom: item.uom || null },
