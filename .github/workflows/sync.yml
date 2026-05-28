@@ -17,8 +17,8 @@ jobs:
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.DESTINATION_SSH_KEY }}
-          known_hosts: ${{ secrets.DESTINATION_SSH_KEY }} # This auto-scans github.com for you
+          key: ${{ secrets.SURESH_TO_AWS_GITHUB_AUTO_DEPLOY }}
+          known_hosts: ${{ secrets.SURESH_TO_AWS_GITHUB_AUTO_DEPLOY }} # This auto-scans github.com for you
 
       - name: Push Changes to Account B
         run: |
